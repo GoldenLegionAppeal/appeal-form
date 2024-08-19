@@ -1,13 +1,21 @@
 document.getElementById('appealForm').addEventListener('submit', async function(event) {
     event.preventDefault(); // Prevent the form from submitting the traditional way
 
+    const lastSubmissionTime = localStorage.getItem('lastSubmissionTime');
+    const currentTime = Date.now();
+
+    if (lastSubmissionTime && currentTime - lastSubmissionTime < 86400000) {
+        alert('You can only submit the form once every 24 hours.');
+        return;
+    }
+
     const caseId = document.getElementById('caseId').value;
     const justified = document.getElementById('justified').value;
     const explanation = document.getElementById('explanation').value || 'N/A';
     const reason = document.getElementById('reason').value;
     const additional = document.getElementById('additional').value || 'N/A';
 
-    const webhookURL = 'https://discord.com/api/webhooks/1275049516281888791/qfpcNT5n1JZ7SSJEGx2fhdIdOnTGxGemtcMi3O0o3xKFhre4fLoY-w2XYdIX95QJa1ml'; // Replace with your actual Discord webhook URL
+    const webhookURL = 'https://discord.com/api/webhooks/1275049516281888791/qfpcNT5n1JZ7SSJEGx2fhdIdOnTGxGemtcMi3O0o3xKFhre4fLoY-w2XYdIX95QJa1ml'; 
 
     const embed = {
         title: "New Ban Appeal Submission",
@@ -53,6 +61,7 @@ document.getElementById('appealForm').addEventListener('submit', async function(
 
         if (response.ok) {
             alert('Appeal submitted successfully!');
+            localStorage.setItem('lastSubmissionTime', currentTime.toString()); // Store the current time
         } else {
             alert('Failed to submit appeal.');
         }
@@ -60,3 +69,4 @@ document.getElementById('appealForm').addEventListener('submit', async function(
         alert('Error submitting appeal.');
     }
 });
+
